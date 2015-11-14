@@ -1,13 +1,27 @@
 import sys
-import requests 
+import requests
 import json
 import apis
 
+from urllib.request import Request, urlopen
+from urllib.parse import urlencode
+
+
+def _request(symbol, stat):
+    url = 'http://finance.yahoo.com/d/quotes.csv?s=%s&f=%s' % (symbol, stat)
+    req = Request(url)
+    resp = urlopen(req)
+    return str(resp.read().decode('utf-8').strip())
+
+def get_price(symbol):
+    return _request(symbol, 'l1')
+
+
 def square(n):
-    """ Square numbers  
+    """ Square numbers
 
     >>> square(2)
-    4 
+    4
     >>> square(3)
     8
     """
@@ -23,11 +37,11 @@ def dispatcher(command, arg):
     elif command == "go away":
         print("It sounds like you no longer need my assistance")
         print("Very well. Goodbye!")
-        return 
+        return
     elif command == "bye":
         print("Goodbye! Have a good day!")
         return
-    # Reprompt the user. 
+    # Reprompt the user.
     prompter()
 
 
@@ -41,8 +55,9 @@ def prompter():
     if command == "square":
         num = input("I love math! What number?")
         dispatcher(command, num)
-    elif command == "stocks": # TODO
-        pass
+    elif command == "stocks":
+        symbol = input("Sure thing! What is the symbol of the stock?")
+        get_price(symbol)
     else:
         dispatcher(command, "")
 
@@ -55,7 +70,7 @@ def starter(cliargs):
 
     if (len(cliargs) > 1):
         command = cliargs[2]
-        # TODO: Call dispatcher with args instead of prompting user. 
+        # TODO: Call dispatcher with args instead of prompting user.
     else:
         prompter()
 
